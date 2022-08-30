@@ -195,12 +195,12 @@ contract("Proxy",([deployer])=>{
 		it('plusOne successfully', async ()=> {
             let value = await contract1.methods.plusOne(1).call();
             assert.notEqual(value, 1)
-            assert.equal(value, 3)
+            assert.equal(value, 2)
         });
 		it('plusOne in Proxy successfully', async ()=> {
             let value = await proxyContract.methods.proxyCall().call();
             assert.notEqual(value, 1);
-            assert.equal(value, 3);
+            assert.equal(value, 2);
         });
     });	
 });

@@ -6,7 +6,7 @@ contract Calculation1{
     event PlusOne (address from, uint256 value);
     function plusOne(uint256 value) public returns (uint256){
         emit PlusOne(msg.sender, value);
-        return value +2;
+        return value +1;
     }
 
 }

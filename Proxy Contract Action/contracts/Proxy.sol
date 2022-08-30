@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 import "./ICalculation.sol";
-contract Proxy{
+import "./Ownable.sol";
+
+contract Proxy is Ownable{
 
     address public target;
     
@@ -21,7 +23,7 @@ contract Proxy{
         return target;
     }
 
-    function setTarget(address t) public{
+    function setTarget(address t) onlyOwner public{
         target = t;
     }
 }
