@@ -177,7 +177,7 @@ contract("Proxy",([deployer])=>{
         });
     });
 
-	 //Set Target
+	 //Change Target
 	 describe('change Target',async()=>{
         it('Target successfully changed', async ()=> {
 
@@ -187,6 +187,20 @@ contract("Proxy",([deployer])=>{
 			await proxyContract.methods.setTarget(address1).send({from: deployer})
 			target = await proxyContract.methods.getTarget().call();
 			assert.equal(target, address1);
+        });
+    });	
+
+	 //Test Contract interaction with Calculation1.sol
+	 describe('Interaction with Calculation1 ',async()=>{
+		it('plusOne successfully', async ()=> {
+            let value = await contract1.methods.plusOne(1).call();
+            assert.notEqual(value, 1)
+            assert.equal(value, 3)
+        });
+		it('plusOne in Proxy successfully', async ()=> {
+            let value = await proxyContract.methods.proxyCall().call();
+            assert.notEqual(value, 1);
+            assert.equal(value, 3);
         });
     });	
 });
