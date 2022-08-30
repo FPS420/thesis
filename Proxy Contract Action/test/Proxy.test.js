@@ -90,7 +90,7 @@ const proxyAbi =[
 		"type": "function"
 	}
 ]
-contract("Proxy",([deployer])=>{
+contract("Proxy",([])=>{
 
     //Deploy Contract
     before(async() => {
