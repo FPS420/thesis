@@ -47,7 +47,13 @@ const abi  = [
 ]
 const proxyAbi =[
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "t",
+				"type": "address"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -71,13 +77,20 @@ const proxyAbi =[
 		"type": "event"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "getTarget",
+		"outputs": [
 			{
 				"internalType": "address",
-				"name": "target",
+				"name": "",
 				"type": "address"
 			}
 		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "proxyCall",
 		"outputs": [
 			{
@@ -87,6 +100,32 @@ const proxyAbi =[
 			}
 		],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "t",
+				"type": "address"
+			}
+		],
+		"name": "setTarget",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "target",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	}
 ]
@@ -128,11 +167,18 @@ contract("Proxy",([])=>{
 	 //Test plusOne in Proxy
 	 describe('plusOne',async()=>{
         it('plusOne in Proxy successfully', async ()=> {
-			//await proxyContract.methods.setContract(address).call();
-            let value = await proxyContract.methods.proxyCall(address).call();
-            assert.notEqual(value, 1)
-            assert.equal(value, 2)
+            let value = await proxyContract.methods.proxyCall().call();
+            assert.notEqual(value, 1);
+            assert.equal(value, 2);
         });
     });
+
+	 //Set Target
+	 describe('change Target',async()=>{
+        it('Target successfully set', async ()=> {
+			let target = await proxyContract.methods.getTarget().call();
+			assert.equal(target.toString(), address.toString());
+        });
+    });	
 });
 
