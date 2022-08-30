@@ -1,4 +1,5 @@
 const Calculation = artifacts.require('./Calculation.sol');
+const Calculation1 = artifacts.require('./Calculation1.sol');
 const ProxyContract = artifacts.require('./Proxy.sol');
 const abi  = [
 	{
@@ -129,15 +130,18 @@ const proxyAbi =[
 		"type": "function"
 	}
 ]
-contract("Proxy",([])=>{
+contract("Proxy",([deployer])=>{
 
     //Deploy Contract
     before(async() => {
         calc = await Calculation.deployed();
+		calc1 = await Calculation1.deployed();
 		proxy = await ProxyContract.deployed();
         address = await calc.address;
+		address1 = await calc1.address;
 		proxyAddress= await proxy.address;
         contract = new web3.eth.Contract(abi,address);
+		contract1 = new web3.eth.Contract(abi,address1);
 		proxyContract = new web3.eth.Contract(proxyAbi,proxyAddress);
     })
 
@@ -175,9 +179,14 @@ contract("Proxy",([])=>{
 
 	 //Set Target
 	 describe('change Target',async()=>{
-        it('Target successfully set', async ()=> {
+        it('Target successfully changed', async ()=> {
+
 			let target = await proxyContract.methods.getTarget().call();
-			assert.equal(target.toString(), address.toString());
+			assert.equal(target, address);
+
+			await proxyContract.methods.setTarget(address1).send({from: deployer})
+			target = await proxyContract.methods.getTarget().call();
+			assert.equal(target, address1);
         });
     });	
 });

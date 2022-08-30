@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract Calculation{
+contract Calculation1{
     constructor(){}
     event PlusOne (address from, uint256 value);
     function plusOne(uint256 value) public returns (uint256){
