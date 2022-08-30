@@ -1,6 +1,12 @@
 const Calculation = artifacts.require('./Calculation.sol');
 const Calculation1 = artifacts.require('./Calculation1.sol');
 const ProxyContract = artifacts.require('./Proxy.sol');
+
+var chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+chai.should();
+
 const abi  = [
 	{
 		"inputs": [],
@@ -130,7 +136,7 @@ const proxyAbi =[
 		"type": "function"
 	}
 ]
-contract("Proxy",([deployer])=>{
+contract("Proxy",([deployer, third])=>{
 
     //Deploy Contract
     before(async() => {
@@ -203,5 +209,20 @@ contract("Proxy",([deployer])=>{
             assert.equal(value, 2);
         });
     });	
+	//Test Ownable.sol
+	describe('Proxy.sol inherits Ownable.sol',async()=>{
+		it('set new Target as Owner', async ()=> {
+			let target = await proxyContract.methods.getTarget().call();
+			assert.notEqual(target, address);
+			await proxyContract.methods.setTarget(address).send({from: deployer})
+			target = await proxyContract.methods.getTarget().call();
+			assert.equal(target, address);
+		});
+		it('set new Target as not Owner', async ()=> {
+			let target = await proxyContract.methods.getTarget().call();
+			assert.equal(target, address);
+			await proxyContract.methods.setTarget(address1).send({from: third}).should.be.rejectedWith('Youre not the Owner');
+		});
+	});	
 });
 
