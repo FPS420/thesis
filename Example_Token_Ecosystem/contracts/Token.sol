@@ -5,7 +5,7 @@ import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Token is ERC20 {
 
-    constructor() ERC20("Lotte Coin", "LTT") {
-        _mint(msg.sender,1234 * 10 ** 18);
+    constructor() ERC20("Lotte", "LTT") {
+        _mint(msg.sender,1000000 * 10 ** 18);
     }
 }
