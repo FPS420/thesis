@@ -290,7 +290,10 @@ const abiToken = [
 ];
 
 contract("Token",([deployer])=>{
-    
+
+    let balanceDeployer
+    const totalSupply = 100000;
+
     before(async() => {
         token = await Token.deployed()
         tokenAddress = await token.address
@@ -303,6 +306,13 @@ contract("Token",([deployer])=>{
             assert.notEqual(tokenAddress, '')
             assert.notEqual(tokenAddress, null)
             assert.notEqual(tokenAddress, undefined)
+        })
+    })
+
+    describe('Deployer balance',async()=>{
+        it('deployer hold total supply',async()=>{
+          balanceDeployer = await contractToken.methods.balanceOf(deployer).call();     
+          assert.equal(totalSupply, web3.utils.fromWei(balanceDeployer));
         })
     })
 });
