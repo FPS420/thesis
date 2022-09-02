@@ -1,19 +1,7 @@
-const Token = artifacts.require ('./Token.sol');
-
+const Token = artifacts.require ('Token.sol');
 const abiToken = [
 	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name_",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "symbol_",
-				"type": "string"
-			}
-		],
+		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -124,6 +112,19 @@ const abiToken = [
 			}
 		],
 		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "cap",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -289,10 +290,11 @@ const abiToken = [
 	}
 ];
 
+
 contract("Token",([deployer])=>{
 
-    let balanceDeployer
-    const totalSupply = 100000;
+    let balanceDeployer;
+	let launchSupply;
 
     before(async() => {
         token = await Token.deployed()
@@ -311,8 +313,10 @@ contract("Token",([deployer])=>{
 
     describe('Deployer balance',async()=>{
         it('deployer hold total supply',async()=>{
-          balanceDeployer = await contractToken.methods.balanceOf(deployer).call();     
-          assert.equal(totalSupply, web3.utils.fromWei(balanceDeployer));
+			launchSupply = web3.utils.fromWei(await contractToken.methods.cap().call()) / 10;
+          	balanceDeployer = await contractToken.methods.balanceOf(deployer).call();     
+          	assert.equal(launchSupply, web3.utils.fromWei(balanceDeployer));
         })
     })
+
 });
