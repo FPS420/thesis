@@ -7,12 +7,14 @@ contract Vendor is Ownable {
     Token public token;
     uint256 public constant rate = 10;
 
+
     constructor(address tokenAddress) {
     token = Token(tokenAddress);
     }
     
     event BuyTokens(address buyer, uint256 amountOfBnb, uint256 amountOfTokens);
-    
+    // @notice Will receive any eth sent to the contract
+    receive() external payable { }
     function buyTokens() public payable {
         require(msg.value > 0, 'not enought BNB to buy tokens');
         uint amountToTransfer = msg.value * rate;
