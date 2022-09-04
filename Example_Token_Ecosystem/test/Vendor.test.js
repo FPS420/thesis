@@ -141,7 +141,7 @@ chai.use(chaiAsPromised);
 chai.should();
 chai.expect();
 
-  contract("Vendor",([deployer])=>{
+  contract("Vendor",([deployer,third])=>{
 
     before(async() => {
     vendor = await Vendor.deployed();
@@ -183,6 +183,9 @@ chai.expect();
             let totalSupply = web3.utils.fromWei(await contractToken.methods.totalSupply().call());
             let cap = web3.utils.fromWei(await contractToken.methods.cap().call());
             await contractToken.methods.mint((cap-totalSupply)+1,vendorAddress).send({from: deployer}).should.be.rejected;
+        });
+        it("Mint tokens as not be an owner",async()=>{
+            await contractToken.methods.mint(1,third).send({from: third}).should.be.rejected;
         });
     });
   });
