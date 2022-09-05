@@ -320,9 +320,9 @@ contract("Mediator",([client,contractor])=>{
     });
     describe('Apply a Job',async()=>{
         it('Applying successfully', async ()=> {
-           // let id = await contractMediator.methods.lastId().call();
-           // let job = await contractMediator.methods.applyJob(id).send({from: contractor, gas: 200000});
-          
+           await contractMediator.methods.applyJob(1).send({from: contractor});
+           let job = await contractMediator.methods.getJobById(1).call();
+           assert.equal(job["contractor"],contractor);
         });
     });          
 });
