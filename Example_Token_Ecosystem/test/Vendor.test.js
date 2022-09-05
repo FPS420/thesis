@@ -1,5 +1,5 @@
 const Vendor = artifacts.require("Vendor.sol");
-const abiVendor = [[
+const abiVendor = [
 	{
 		"inputs": [
 			{
@@ -132,7 +132,7 @@ const abiVendor = [[
 		"stateMutability": "payable",
 		"type": "receive"
 	}
-]];
+];
 
 var chai = require("chai");
 const { transferPromiseness } = require("chai-as-promised");
@@ -184,8 +184,20 @@ chai.expect();
             let cap = web3.utils.fromWei(await contractToken.methods.cap().call());
             await contractToken.methods.mint((cap-totalSupply)+1,vendorAddress).send({from: deployer}).should.be.rejected;
         });
-        it("Mint tokens as not be an owner",async()=>{
+        it("Mint tokens as not be the owner",async()=>{
             await contractToken.methods.mint(1,third).send({from: third}).should.be.rejected;
+        });
+    });
+    
+    describe('Third Person interaction',async()=>{
+        it('Buy Tokens', async ()=> {
+            let valueEth = web3.utils.toWei('1')
+            let rate = await contractVendor.methods.rate().call();
+            balance = await contractToken.methods.balanceOf(third).call();
+            assert.equal(web3.utils.fromWei(balance.toString()),0);
+            await contractVendor.methods.buyTokens().send({from: third, value: valueEth});
+            balance = await contractToken.methods.balanceOf(third).call();
+            assert.equal(web3.utils.fromWei(balance.toString()),rate*web3.utils.fromWei(valueEth.toString()));
         });
     });
   });
