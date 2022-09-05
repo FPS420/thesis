@@ -21,7 +21,7 @@ contract Mediator {
 
     function createId() private returns (uint256){
         lastId = lastId +1;
-        return lastId;
+        return lastId +1;
     }
 
     function createJob(string memory description, uint256 remuneration, string memory title) public returns(Job memory){
@@ -32,6 +32,13 @@ contract Mediator {
     }
 
     function getJobById(uint256 _id) public view returns(Job memory){
+        return jobs[_id];
+    }
+
+    function applyJob(uint256 _id) public returns(Job memory){
+        Job memory job = jobs[_id];
+        job.contractor = msg.sender;
+        jobs[_id]= job;
         return jobs[_id];
     }
 
