@@ -10,29 +10,34 @@ contract Mediator {
     token = Token(tokenAddress);
     }
 
-    struct Job {
+     struct Job {
         uint256 id;
         string title;
         address client;
         address contractor;
         string description;
         uint256 remuneration;
+        bool isActive;
     }
 
     function createId() private returns (uint256){
         lastId = lastId +1;
-        return lastId +1;
+        return lastId;
     }
 
     function createJob(string memory description, uint256 remuneration, string memory title) public returns(Job memory){
         uint256 _id = createId();
-        Job memory newJob = Job(_id, title, msg.sender, msg.sender, description,remuneration);
+        Job memory newJob = Job(_id, title, msg.sender, msg.sender, description,remuneration, true);
         jobs[_id]= newJob;
         return newJob;
     }
 
     function getJobById(uint256 _id) public view returns(Job memory){
         return jobs[_id];
+    }
+
+    function jobIsActive(uint256 _id) public view returns(bool) {
+        return getJobById(_id).isActive;
     }
 
     function applyJob(uint256 _id) public returns(Job memory){

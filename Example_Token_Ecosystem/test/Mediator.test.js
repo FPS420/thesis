@@ -52,6 +52,11 @@ const abiMediator = [
 						"internalType": "uint256",
 						"name": "remuneration",
 						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
 					}
 				],
 				"internalType": "struct Mediator.Job",
@@ -113,6 +118,11 @@ const abiMediator = [
 						"internalType": "uint256",
 						"name": "remuneration",
 						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
 					}
 				],
 				"internalType": "struct Mediator.Job",
@@ -164,11 +174,35 @@ const abiMediator = [
 						"internalType": "uint256",
 						"name": "remuneration",
 						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
 					}
 				],
 				"internalType": "struct Mediator.Job",
 				"name": "",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "jobIsActive",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -213,6 +247,11 @@ const abiMediator = [
 				"internalType": "uint256",
 				"name": "remuneration",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -245,6 +284,7 @@ const abiMediator = [
 		"type": "function"
 	}
 ]
+
 contract("Mediator",([client,contractor])=>{
     before(async() => {
         mediator = await Mediator.deployed();
@@ -257,28 +297,32 @@ contract("Mediator",([client,contractor])=>{
             assert.notEqual(mediatorAddress, '')
             assert.notEqual(mediatorAddress, null)
             assert.notEqual(mediatorAddress, undefined)
+            console.log("hello")
         });
     });
     describe('List a Job',async()=>{
         it('listing successfully', async ()=> {
-            let id = await contractMediator.methods.lastId().call();
-            await contractMediator.methods.createJob("You have to learn Solidity",10, "Learning Solidity").send({from: client, gas: 200000}).then(
-                await contractMediator.methods.getJobById(1).call().then(resultArray =>{
-                _id = resultArray[0]
-                assert.equal(1, _id);
-                _remuneration = resultArray[5];
-                assert.equal(_remuneration,10);
-            }));
-            
-          
-           // assert.equal(job.remuneration,10);
+            let title ="Learning Solidity";
+            let remuneration = 10;
+            let description = "You have to learn Solidity"
+            assert.equal(await contractMediator.methods.lastId().call(),0);
+            await contractMediator.methods.createJob(description,remuneration, title).send({from: client, gas: 200000});
+            assert.equal(await contractMediator.methods.lastId().call(),1);
+            let job = await contractMediator.methods.getJobById(1).call();
+            assert.equal(job["id"],1);
+            assert.equal(job["title"],title);
+            assert.equal(job["description"],description);
+            assert.equal(job["remuneration"],remuneration);
+            assert.equal(job["isActive"],true);
+            assert.equal(job["client"],client);
+            assert.equal(job["contractor"],client);
         });
     });
     describe('Apply a Job',async()=>{
         it('Applying successfully', async ()=> {
-            let id = await contractMediator.methods.lastId().call();
-            let job = await contractMediator.methods.applyJob(id).send({from: contractor, gas: 200000});
-
+           // let id = await contractMediator.methods.lastId().call();
+           // let job = await contractMediator.methods.applyJob(id).send({from: contractor, gas: 200000});
+          
         });
     });          
 });
