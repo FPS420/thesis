@@ -135,7 +135,6 @@ const abiVendor = [
 ];
 
 var chai = require("chai");
-const { transferPromiseness } = require("chai-as-promised");
 var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 chai.should();

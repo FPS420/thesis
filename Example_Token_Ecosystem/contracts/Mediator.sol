@@ -27,6 +27,8 @@ contract Mediator {
 
     function createJob(string memory description, uint256 remuneration, string memory title) public returns(Job memory){
         uint256 _id = createId();
+        //--Approve Contract to spend Tokens from client.
+        token.approve(address(this), remuneration);
         Job memory newJob = Job(_id, title, msg.sender, msg.sender, description,remuneration, true);
         jobs[_id]= newJob;
         return newJob;
