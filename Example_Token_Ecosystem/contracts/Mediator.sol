@@ -18,6 +18,7 @@ contract Mediator {
         string description;
         uint256 remuneration;
         bool isActive;
+        string status;
     }
 
     function createId() private returns (uint256){
@@ -28,8 +29,8 @@ contract Mediator {
     function createJob(string memory description, uint256 remuneration, string memory title) public returns(Job memory){
         uint256 _id = createId();
         //--Approve Contract to spend Tokens from client.
-        token.approve(address(this), remuneration);
-        Job memory newJob = Job(_id, title, msg.sender, msg.sender, description,remuneration, true);
+        //token.approve(address(this), remuneration);
+        Job memory newJob = Job(_id, title, msg.sender, msg.sender, description,remuneration, true, 'listed');
         jobs[_id]= newJob;
         return newJob;
     }
@@ -47,6 +48,18 @@ contract Mediator {
         job.contractor = msg.sender;
         jobs[_id]= job;
         return jobs[_id];
+    }
+     function jobSuccessfully(uint256 _id) public returns(Job memory){
+        Job memory job = jobs[_id];
+        job.isActive = false;
+        job.status = 'finished successfully';
+        jobs[_id]=job;
+        releaseTokens(_id);
+        return jobs[_id];
+    }
+    function releaseTokens(uint256 _id) private {
+        Job memory job = jobs[_id];
+       // require();
     }
 
 }

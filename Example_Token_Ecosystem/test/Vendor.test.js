@@ -140,12 +140,13 @@ chai.use(chaiAsPromised);
 chai.should();
 chai.expect();
 
-  contract("Vendor",([deployer,third])=>{
+  contract("Vendor",([deployer,client])=>{
 
     before(async() => {
     vendor = await Vendor.deployed();
     vendorAddress = await vendor.address;
     contractVendor = new web3.eth.Contract(abiVendor,vendorAddress);
+
     });
 
     describe('deployment',async()=>{
@@ -184,18 +185,18 @@ chai.expect();
             await contractToken.methods.mint((cap-totalSupply)+1,vendorAddress).send({from: deployer}).should.be.rejected;
         });
         it("Mint tokens as not be the owner",async()=>{
-            await contractToken.methods.mint(1,third).send({from: third}).should.be.rejected;
+            await contractToken.methods.mint(1,client).send({from: client}).should.be.rejected;
         });
     });
     
     describe('Third Person interaction',async()=>{
         it('Buy Tokens', async ()=> {
-            let valueEth = web3.utils.toWei('1')
+            let valueEth = web3.utils.toWei('0.5')
             let rate = await contractVendor.methods.rate().call();
-            balance = await contractToken.methods.balanceOf(third).call();
+            balance = await contractToken.methods.balanceOf(client).call();
             assert.equal(web3.utils.fromWei(balance.toString()),0);
-            await contractVendor.methods.buyTokens().send({from: third, value: valueEth});
-            balance = await contractToken.methods.balanceOf(third).call();
+            await contractVendor.methods.buyTokens().send({from: client, value: valueEth});
+            balance = await contractToken.methods.balanceOf(client).call();
             assert.equal(web3.utils.fromWei(balance.toString()),rate*web3.utils.fromWei(valueEth.toString()));
         });
     });
