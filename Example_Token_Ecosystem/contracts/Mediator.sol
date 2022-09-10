@@ -10,6 +10,8 @@ contract Mediator {
     token = Token(tokenAddress);
     }
 
+    receive() external payable { }
+
      struct Job {
         uint256 id;
         string title;
@@ -28,10 +30,11 @@ contract Mediator {
 
     function createJob(string memory description, uint256 remuneration, string memory title) public returns(Job memory){
         uint256 _id = createId();
-        //--Approve Contract to spend Tokens from client.
-        //token.approve(address(this), remuneration);
         Job memory newJob = Job(_id, title, msg.sender, msg.sender, description,remuneration, true, 'listed');
         jobs[_id]= newJob;
+        uint256 allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= remuneration, 'allowance has to be equal or bigger than remuneration of this job');
+        token.transferFrom(msg.sender, address(this), allowance);
         return newJob;
     }
 
@@ -54,12 +57,12 @@ contract Mediator {
         job.isActive = false;
         job.status = 'finished successfully';
         jobs[_id]=job;
-        releaseTokens(_id);
+
+        uint256 balance = token.balanceOf(address(this));
+        require(balance >= job.remuneration, 'balance to small');
+        
+        token.transfer(job.contractor, job.remuneration);
+
         return jobs[_id];
     }
-    function releaseTokens(uint256 _id) private {
-        Job memory job = jobs[_id];
-       // require();
-    }
-
 }

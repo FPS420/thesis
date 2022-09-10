@@ -363,6 +363,10 @@ const abiMediator = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
 	}
 ]
 //-------------------------------------------------------------------------
@@ -381,10 +385,24 @@ contract("Mediator",([deployer,client,contractor])=>{
             assert.notEqual(mediatorAddress, undefined)
         });
     });
+	describe('Approve Contract to get clients Tokens',async()=>{
+		it('Client get some Tokens successfully',async()=>{
+			await contractToken.methods.transfer(client,web3.utils.toWei('100')).send({from: deployer});
+            balance = await contractToken.methods.balanceOf(client).call();
+           	assert.equal(web3.utils.fromWei(balance.toString()),'100');
+		});
+        it('approve successfully',async()=>{
+            //client approve contract to spend 10 of his tokens
+			await contractToken.methods.approve(mediatorAddress,web3.utils.toWei('10')).send({from: client});
+            let allowance = await contractToken.methods.allowance(client,mediatorAddress).call();
+            assert.equal(web3.utils.fromWei(allowance.toString()),10);
+        });
+    });
     describe('List a Job',async()=>{
+
         it('listing successfully', async ()=> {
             let title ="Learning Solidity";
-            let remuneration = 10;
+            let remuneration = web3.utils.toWei('10');
             let description = "You have to learn Solidity"
             assert.equal(await contractMediator.methods.lastId().call(),0);
             await contractMediator.methods.createJob(description,remuneration, title).send({from: client, gas: 2000000});
@@ -397,35 +415,28 @@ contract("Mediator",([deployer,client,contractor])=>{
             assert.equal(job["isActive"],true);
             assert.equal(job["client"],client);
             assert.equal(job["contractor"],client);
+			assert.equal(await contractToken.methods.balanceOf(client).call(),web3.utils.toWei('90'));
+			assert.equal(await contractToken.methods.balanceOf(mediatorAddress).call(),web3.utils.toWei('10'));
         });
     });
-// VENDOR DOES NOT HOLD SUPPLY?
-    describe('Approve Contract to spend clients tokens',async()=>{
-        it('approve successfully',async()=>{
-			balanceVendor = await contractToken.methods.balanceOf(vendorAddress).call();
-            assert.equal(web3.utils.fromWei(balanceVendor),555);
+	
+  
 
-            balance = await contractToken.methods.balanceOf(client).call();
-           //	assert.equal(web3.utils.fromWei(balance.toString()),'100');
-            
-			
-            //client approve contract to spend 10 of his tokens
-            await contractToken.methods.approve(mediatorAddress,10).send({from: client});
-
-            let allowance = await contractToken.methods.allowance(client,mediatorAddress).call({from: mediatorAddress});
-            assert.equal(allowance,10);
-        });
-    });
     describe('Apply a Job',async()=>{
         it('Applying successfully', async ()=> {
-           await contractMediator.methods.applyJob(1).send({from: contractor});
-           let job = await contractMediator.methods.getJobById(1).call();
-           assert.equal(job["contractor"],contractor);
+			await contractMediator.methods.applyJob(1).send({from: contractor});
+			let job = await contractMediator.methods.getJobById(1).call();
+			assert.equal(job["contractor"],contractor);
         });
     });
+
     describe('Realease Tokens',async()=>{
         it('approve job is finished', async ()=> {
-          
+          	await contractMediator.methods.jobSuccessfully(1).send({from: client, gas:2000000});
+
+			assert.equal(await contractToken.methods.balanceOf(client).call(),web3.utils.toWei('90'));
+			assert.equal(await contractToken.methods.balanceOf(mediatorAddress).call(),web3.utils.toWei('0'));
+			assert.equal(await contractToken.methods.balanceOf(contractor).call(),web3.utils.toWei('10'));
         });
     });     
 });
