@@ -54,6 +54,7 @@ contract Mediator {
     }
      function jobSuccessfully(uint256 _id) public returns(Job memory){
         Job memory job = jobs[_id];
+        require(job.client == msg.sender, 'Access Denied');
         job.isActive = false;
         job.status = 'finished successfully';
         jobs[_id]=job;
@@ -62,7 +63,7 @@ contract Mediator {
         require(balance >= job.remuneration, 'balance to small');
         
         token.transfer(job.contractor, job.remuneration);
-
+        
         return jobs[_id];
     }
 }
