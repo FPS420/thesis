@@ -1,7 +1,7 @@
 const Token = artifacts.require ('ERC20Standard.sol');
 
 //Test ERC20Standard.sol - [deployer] is the first EOA-Address
-contract("Token",([deployer,buyer,seller])=>{
+contract("ERC20Standard",([deployer,buyer,seller])=>{
     const totalSupply = web3.utils.toWei('1000000');
     const amount = web3.utils.toWei('100000');
 	//deployment of Smart Contract and instantiating JS Object of ERC20Standard.sol
