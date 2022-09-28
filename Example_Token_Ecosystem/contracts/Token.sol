@@ -7,8 +7,9 @@ import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 // Contract according to the ERC20 standard, with Cap an Ownable extention  
 contract Token is ERC20Capped, Ownable {
+    uint256 maxSupply = 1000000 * 10 ** 18;
     // Mint 10% of Tokens after deployment to the deployer
-    constructor() ERC20("Lotte", "LTT") ERC20Capped(1000000 * 10 ** 18) {
+    constructor() ERC20("Lotte", "LTT") ERC20Capped(maxSupply) {
         _mint(msg.sender,100000 * 10 ** 18);
     }
     // mint new Tokens, only owner has access
